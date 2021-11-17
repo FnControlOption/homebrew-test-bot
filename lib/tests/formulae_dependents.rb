@@ -186,9 +186,14 @@ module Homebrew
         if testable_dependents.include? dependent
           test "brew", "install", "--only-dependencies", "--include-test", dependent.full_name
 
-          dependent.recursive_dependencies.each do |dependency|
-            next if dependency.build? && !dependency.test?
+          test_dependencies = dependent.recursive_dependencies do |dep_dependent, dependency|
+            next if !dependency.build? && !dependency.test?
+            next if dependency.test? && dep_dependent == dependent
 
+            Dependency.prune
+          end
+
+          test_dependencies.each do |dependency|
             dependency_f = dependency.to_formula
             # We don't want to attempt to link runtime deps of build deps.
             next unless dependency_f.any_version_installed?
