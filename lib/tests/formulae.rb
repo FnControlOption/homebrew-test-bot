@@ -171,7 +171,7 @@ module Homebrew
 
         # GitHub Releases url
         root_url ||= if tap.present? && !tap.core_tap? && !@test_default_formula
-          "#{tap.default_remote}/releases/download/#{formula.name}-#{formula.pkg_version}"
+          GitHubPackages.root_url(tap.user, "homebrew-#{tap.repo}")
         end
 
         # This is needed where sparse files may be handled (bsdtar >=3.0).
